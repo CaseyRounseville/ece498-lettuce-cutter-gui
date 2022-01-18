@@ -2,6 +2,7 @@ package main;
 
 import model.BladeModel;
 import model.PusherModel;
+import model.ProximitySensorModel;
 import model.LettuceCutterModel;
 import model.Status;
 import model.ProduceType;
@@ -22,7 +23,8 @@ import java.awt.FlowLayout;
 public class Main {
     private static void createAndShowGUI(
         BladeSystem bladeSystem,
-        PusherSystem pusherSystem
+        PusherSystem pusherSystem,
+	ProximitySensorModel proximitySensorModel
     ) {
         // create and set up the window
         JFrame frame = new JFrame("Lettuce Cutter GUI");
@@ -37,7 +39,8 @@ public class Main {
         // add the status view
         StatusView statusView = new StatusView(
             bladeSystem.getBladeModel().getBladeStatus(),
-            pusherSystem.getPusherModel().getPusherStatus()
+            pusherSystem.getPusherModel().getPusherStatus(),
+	    proximitySensorModel.getProximitySensorStatus()
         );
         frame.getContentPane().add(statusView);
 
@@ -69,6 +72,9 @@ public class Main {
         PusherModel pusherModel = new PusherModel();
         PusherSystem pusherSystem = new PusherSystem(pusherModel);
 
+	// create proximity sensor
+	ProximitySensorModel proximitySensorModel = new ProximitySensorModel();
+
         // start blade system
         Thread bladeSystemThread = new Thread(bladeSystem);
         bladeSystemThread.start();
@@ -83,7 +89,8 @@ public class Main {
             public void run() {
                 createAndShowGUI(
                     bladeSystem,
-                    pusherSystem
+                    pusherSystem,
+		    proximitySensorModel
                 );
             }
         });

@@ -2,6 +2,7 @@ package view;
 
 import model.BladeStatus;
 import model.PusherStatus;
+import model.ProximitySensorStatus;
 
 import util.ConcurrentObservable;
 import util.ConcurrentObserver;
@@ -21,28 +22,35 @@ public class StatusView extends JPanel {
     // observable statuses
     private ConcurrentObservable<BladeStatus> bladeStatus;
     private ConcurrentObservable<PusherStatus> pusherStatus;
+    private ConcurrentObservable<ProximitySensorStatus> proximitySensorStatus;
 
     // observers to observe changes in the statuses
     private ConcurrentObserver<BladeStatus> bladeStatusObserver;
     private ConcurrentObserver<PusherStatus> pusherStatusObserver;
+    private ConcurrentObserver<ProximitySensorStatus> proximitySensorStatusObserver;
 
     // labels
     private JLabel bladeStatusLabel;
     private JLabel pusherStatusLabel;
+    private JLabel proximitySensorStatusLabel;
 
     public StatusView(
         ConcurrentObservable<BladeStatus> bladeStatus,
-        ConcurrentObservable<PusherStatus> pusherStatus
+        ConcurrentObservable<PusherStatus> pusherStatus,
+        ConcurrentObservable<ProximitySensorStatus> proximitySensorStatus
     ) {
         this.bladeStatus = bladeStatus;
         this.pusherStatus = pusherStatus;
+        this.proximitySensorStatus = proximitySensorStatus;
 
         bladeStatusLabel = new JLabel();
         pusherStatusLabel = new JLabel();
+        proximitySensorStatusLabel = new JLabel();
 
         // set labels to initial values
         bladeStatusLabel.setText(bladeStatus.getValue().name());
         pusherStatusLabel.setText(pusherStatus.getValue().name());
+        proximitySensorStatusLabel.setText(proximitySensorStatus.getValue().name());
 
         // change blade status label when the blade status changes
         bladeStatusObserver = new ConcurrentObserver<BladeStatus>() {
@@ -69,6 +77,19 @@ public class StatusView extends JPanel {
             }
         };
         pusherStatus.addObserver(pusherStatusObserver);
+
+        // change proximity sensor status label when the proximity sensor status changes
+        proximitySensorStatusObserver = new ConcurrentObserver<ProximitySensorStatus>() {
+            @Override
+            public void onChange(ProximitySensorStatus newProximitySensorStatus) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        proximitySensorStatusLabel.setText(proximitySensorStatus.getValue().name());
+                    }
+                });
+            }
+        };
+        proximitySensorStatus.addObserver(proximitySensorStatusObserver);
 
         // set the border of this jpanel
         TitledBorder border = BorderFactory.createTitledBorder(
@@ -105,5 +126,16 @@ public class StatusView extends JPanel {
         constr.gridx = 1;
         constr.gridy = 1;
         this.add(pusherStatusLabel, constr);
+
+        JLabel proximitySensorStatusText = new JLabel("Prox");
+        constr.fill = GridBagConstraints.HORIZONTAL;
+        constr.gridx = 0;
+        constr.gridy = 2;
+        this.add(proximitySensorStatusText, constr);
+
+        constr.fill = GridBagConstraints.HORIZONTAL;
+        constr.gridx = 1;
+        constr.gridy = 2;
+        this.add(proximitySensorStatusLabel, constr);
     }
 }

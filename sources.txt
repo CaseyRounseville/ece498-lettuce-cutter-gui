@@ -5,6 +5,8 @@
 ./src/model/PusherStatus.java
 ./src/model/LettuceCutterModel.java
 ./src/model/BladeModel.java
+./src/model/ProximitySensorStatus.java
+./src/model/ProximitySensorModel.java
 ./src/model/Status.java
 ./src/model/ProduceType.java
 ./src/model/BladeStatus.java
