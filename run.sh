@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-java -cp bin main.Main
+java -cp bin:/opt/pi4j/lib/'*' main.Main

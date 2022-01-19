@@ -1,42 +1,28 @@
 package main;
 
-import model.BladeModel;
-import model.BladeStatus;
+import model.ProximitySensorModel;
+import model.ProximitySensorStatus;
 
 import util.ConcurrentObservable;
 
-public class BladeSystem implements Runnable {
-    private BladeModel bladeModel;
+public class ProximitySensorSystem implements Runnable {
+    private ProximitySensorModel proximitySensorModel;
 
-    public BladeSystem(BladeModel bladeModel) {
-        this.bladeModel = bladeModel;
+    public ProximitySensorSystem(ProximitySensorModel proximitySensorModel) {
+        this.proximitySensorModel = proximitySensorModel;
     }
 
-    public BladeModel getBladeModel() {
-        return bladeModel;
+    public ProximitySensorModel getProximitySensorModel() {
+        return proximitySensorModel;
     }
 
     @Override
     public void run() {
         int numSeconds = 0;
         while (true) {
-            // do blade stuff
-            ConcurrentObservable<BladeStatus> bladeStatusObservable = bladeModel.getBladeStatus();
-            BladeStatus bladeStatusValue = bladeStatusObservable.getValue();
-            
-            if (numSeconds % 3 == 0) {
-                if (bladeStatusValue == BladeStatus.BOOT) {
-                    bladeStatusObservable.setValue(BladeStatus.IDLE);
-                } else if (bladeStatusValue == BladeStatus.IDLE) {
-                    bladeStatusObservable.setValue(BladeStatus.CUT);
-                } else if (bladeStatusValue == BladeStatus.CUT) {
-                    bladeStatusObservable.setValue(BladeStatus.IDLE);
-                }
-            }
-
-            // wait for one second
+            // wait for a few milliseconds
             try {
-                Thread.sleep(1000);
+                Thread.sleep(5);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

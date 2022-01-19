@@ -15,4 +15,5 @@
 ./src/main/Main.java
 ./src/main/PusherSystem.java
 ./src/main/BladeSystem.java
+./src/main/ProximitySensorSystem.java
 ./src/controller/LettuceCutterController.java
