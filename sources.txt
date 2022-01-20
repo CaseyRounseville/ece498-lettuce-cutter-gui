@@ -12,6 +12,7 @@
 ./src/model/BladeStatus.java
 ./src/util/ConcurrentObserver.java
 ./src/util/ConcurrentObservable.java
+./src/util/TimeUtil.java
 ./src/main/Main.java
 ./src/main/PusherSystem.java
 ./src/main/BladeSystem.java

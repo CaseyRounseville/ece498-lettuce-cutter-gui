@@ -17,6 +17,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Dimension;
 
 public class StatusView extends JPanel {
     // observable statuses
@@ -52,6 +54,12 @@ public class StatusView extends JPanel {
         pusherStatusLabel = new JLabel();
         proximitySensorStatusLabel = new JLabel();
         proximitySensorDistanceCmLabel = new JLabel();
+
+        // set size of labels
+        bladeStatusLabel.setPreferredSize(new Dimension(75, 20));
+        pusherStatusLabel.setPreferredSize(new Dimension(75, 20));
+        proximitySensorStatusLabel.setPreferredSize(new Dimension(75, 20));
+        proximitySensorDistanceCmLabel.setPreferredSize(new Dimension(75, 20));
 
         // set labels to initial values
         bladeStatusLabel.setText(bladeStatus.getValue().name());
@@ -129,44 +137,52 @@ public class StatusView extends JPanel {
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 0;
         constr.gridy = 0;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(bladeStatusText, constr);
 
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 1;
         constr.gridy = 0;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(bladeStatusLabel, constr);
 
         JLabel pusherStatusText = new JLabel("Pusher");
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 0;
         constr.gridy = 1;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(pusherStatusText, constr);
 
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 1;
         constr.gridy = 1;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(pusherStatusLabel, constr);
 
         JLabel proximitySensorStatusText = new JLabel("Prox_S");
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 0;
         constr.gridy = 2;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(proximitySensorStatusText, constr);
 
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 1;
         constr.gridy = 2;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(proximitySensorStatusLabel, constr);
 
         JLabel proximitySensorDistanceCmText = new JLabel("Prox_D");
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 0;
         constr.gridy = 3;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(proximitySensorDistanceCmText, constr);
 
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 1;
         constr.gridy = 3;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(proximitySensorDistanceCmLabel, constr);
     }
 }

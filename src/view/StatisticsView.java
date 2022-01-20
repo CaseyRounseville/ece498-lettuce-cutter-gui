@@ -14,6 +14,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -103,28 +104,33 @@ public class StatisticsView extends JPanel {
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 0;
         constr.gridy = 0;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(lettuceText, constr);
 
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 1;
         constr.gridy = 0;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(lettuceRaftCountLabel, constr);
 
         JLabel microgreenText = new JLabel("Microgreen");
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 0;
         constr.gridy = 1;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(microgreenText, constr);
 
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 1;
         constr.gridy = 1;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(microgreenRaftCountLabel, constr);
 
         constr.fill = GridBagConstraints.BOTH;
         constr.gridx = 2;
         constr.gridy = 0;
         constr.gridheight = 2;
+        constr.insets = new Insets(5, 5, 5, 5);
         this.add(clearStatisticsButton, constr);
     }
 }
