@@ -20,11 +20,15 @@ import javax.swing.SwingUtilities;
 
 import java.awt.FlowLayout;
 
+import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+
 public class Main {
     private static void createAndShowGUI(
         BladeSystem bladeSystem,
         PusherSystem pusherSystem,
-	ProximitySensorModel proximitySensorModel
+        ProximitySensorSystem proximitySensorSystem
     ) {
         // create and set up the window
         JFrame frame = new JFrame("Lettuce Cutter GUI");
@@ -40,7 +44,8 @@ public class Main {
         StatusView statusView = new StatusView(
             bladeSystem.getBladeModel().getBladeStatus(),
             pusherSystem.getPusherModel().getPusherStatus(),
-	    proximitySensorModel.getProximitySensorStatus()
+            proximitySensorSystem.getProximitySensorModel_1().getProximitySensorStatus(),
+            proximitySensorSystem.getProximitySensorModel_1().getDistanceCm()
         );
         frame.getContentPane().add(statusView);
 
@@ -64,6 +69,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        // create gpio controller
+        GpioController gpio = GpioFactory.getInstance();
+
         // create blade system
         BladeModel bladeModel = new BladeModel();
         BladeSystem bladeSystem = new BladeSystem(bladeModel);
@@ -72,8 +80,20 @@ public class Main {
         PusherModel pusherModel = new PusherModel();
         PusherSystem pusherSystem = new PusherSystem(pusherModel);
 
-	// create proximity sensor
-	ProximitySensorModel proximitySensorModel = new ProximitySensorModel();
+        // create proximity sensor system
+        GpioPinDigitalOutput trigPin = gpio.provisionDigitalOutputPin(
+            RaspiPin.GPIO_00
+        );
+        GpioPinDigitalInput echoPin = gpio.provisionDigitalInputPin(
+            RaspiPin.GPIO_01
+        );
+        ProximitySensorModel proximitySensorModel_1 = new ProximitySensorModel(
+            trigPin,
+            echoPin
+        );
+        ProximitySensorSystem proximitySensorSystem = new ProximitySensorSystem(
+            proximitySensorModel_1
+        );
 
         // start blade system
         Thread bladeSystemThread = new Thread(bladeSystem);
@@ -83,6 +103,10 @@ public class Main {
         Thread pusherSystemThread = new Thread(pusherSystem);
         pusherSystemThread.start();
 
+        // start proximity sensor system
+        Thread proximitySensorSystemThread = new Thread(proximitySensorSystem);
+        proximitySensorSystemThread.start();
+
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         SwingUtilities.invokeLater(new Runnable() {
@@ -90,7 +114,7 @@ public class Main {
                 createAndShowGUI(
                     bladeSystem,
                     pusherSystem,
-		    proximitySensorModel
+                    proximitySensorSystem
                 );
             }
         });

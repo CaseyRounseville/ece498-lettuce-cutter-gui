@@ -1,6 +1,7 @@
 package model;
 
 import util.ConcurrentObservable;
+import util.TimeUtil;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
@@ -13,29 +14,28 @@ public class ProximitySensorModel {
     // from the proximity sensor, in centimeters
     private ConcurrentObservable<Double> distanceCm;
 
-    public ProximitySensorModel() {
+    // pins
+    private GpioPinDigitalOutput trigPin;
+    private GpioPinDigitalInput echoPin;
+
+    public ProximitySensorModel(
+        GpioPinDigitalOutput trigPin,
+        GpioPinDigitalInput echoPin
+    ) {
         proximitySensorStatus = new ConcurrentObservable<ProximitySensorStatus>(ProximitySensorStatus.BOOT);
-	distanceCm = new ConcurrentObservable<Double>(0.0);
+        distanceCm = new ConcurrentObservable<Double>(0.0);
+
+        this.trigPin = trigPin;
+        this.echoPin = echoPin;
 
         // create gpio controller
         final GpioController gpio = GpioFactory.getInstance();
 
         // provision gpio pin #02 as an input pin with its internal pull down resistor enabled
         final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin(
-	    RaspiPin.GPIO_07,
-	    PinPullResistance.PULL_DOWN
-	);
-
-	// trig pin
-        final GpioPinDigitalInput trigPin = gpio.provisionDigitalOutputPin(
-	    RaspiPin.GPIO_07
-	);
-
-	// echo pin
-        final GpioPinDigitalInput echoPin = gpio.provisionDigitalInputPin(
-	    RaspiPin.GPIO_07,
-	    PinPullResistance.PULL_DOWN
-	);
+            RaspiPin.GPIO_07,
+            PinPullResistance.PULL_DOWN
+        );
 
         // set shutdown state for this input pin
         myButton.setShutdownOptions(true);
@@ -63,6 +63,58 @@ public class ProximitySensorModel {
     }
 
     public ConcurrentObservable<Double> getDistanceCm() {
-	return distanceCm;
+        return distanceCm;
+    }
+
+    public GpioPinDigitalOutput getTrigPin() {
+        return trigPin;
+    }
+
+    public GpioPinDigitalInput getEchoPin() {
+        return echoPin;
+    }
+
+    public void measureDistance() {
+        // set the trigger to high
+        trigPin.high();
+
+        // set trigger after 0.01ms to low
+        // 0.01ms = 10000ns
+        TimeUtil.sleepNanoseconds(10000);
+        trigPin.low();
+
+        long startTimeNs = System.nanoTime();
+        long arrivalTimeNs = System.nanoTime();
+
+        // save start time of the sound wave
+        long timeoutGuardNs = System.nanoTime();
+        while (echoPin.isLow()) {
+            //System.out.println("echo pin low");
+            startTimeNs = System.nanoTime();
+            if (startTimeNs - timeoutGuardNs > 0.2e9) {
+                distanceCm.setValue(Double.POSITIVE_INFINITY);
+                return;
+            }
+        }
+
+        // save time of arrival of the sound wave
+        timeoutGuardNs = System.nanoTime();
+        while (echoPin.isHigh()) {
+            //System.out.println("echo pin high");
+            arrivalTimeNs = System.nanoTime();
+            if (startTimeNs - timeoutGuardNs > 0.2e9) {
+                distanceCm.setValue(Double.POSITIVE_INFINITY);
+                return;
+            }
+        }
+
+        // time difference between the start and arrival times
+        long timeElapsedNs = arrivalTimeNs - startTimeNs;
+
+        // calculate distance
+        double distCm = (((double)timeElapsedNs / 1.0e9) * 34300.0) / 2.0;
+
+        // set the observable distance
+        distanceCm.setValue(distCm);
     }
 }

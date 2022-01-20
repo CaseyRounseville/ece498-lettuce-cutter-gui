@@ -23,34 +23,41 @@ public class StatusView extends JPanel {
     private ConcurrentObservable<BladeStatus> bladeStatus;
     private ConcurrentObservable<PusherStatus> pusherStatus;
     private ConcurrentObservable<ProximitySensorStatus> proximitySensorStatus;
+    private ConcurrentObservable<Double> proximitySensorDistanceCm;
 
     // observers to observe changes in the statuses
     private ConcurrentObserver<BladeStatus> bladeStatusObserver;
     private ConcurrentObserver<PusherStatus> pusherStatusObserver;
     private ConcurrentObserver<ProximitySensorStatus> proximitySensorStatusObserver;
+    private ConcurrentObserver<Double> proximitySensorDistanceCmObserver;
 
     // labels
     private JLabel bladeStatusLabel;
     private JLabel pusherStatusLabel;
     private JLabel proximitySensorStatusLabel;
+    private JLabel proximitySensorDistanceCmLabel;
 
     public StatusView(
         ConcurrentObservable<BladeStatus> bladeStatus,
         ConcurrentObservable<PusherStatus> pusherStatus,
-        ConcurrentObservable<ProximitySensorStatus> proximitySensorStatus
+        ConcurrentObservable<ProximitySensorStatus> proximitySensorStatus,
+        ConcurrentObservable<Double> proximitySensorDistanceCm
     ) {
         this.bladeStatus = bladeStatus;
         this.pusherStatus = pusherStatus;
         this.proximitySensorStatus = proximitySensorStatus;
+        this.proximitySensorDistanceCm = proximitySensorDistanceCm;
 
         bladeStatusLabel = new JLabel();
         pusherStatusLabel = new JLabel();
         proximitySensorStatusLabel = new JLabel();
+        proximitySensorDistanceCmLabel = new JLabel();
 
         // set labels to initial values
         bladeStatusLabel.setText(bladeStatus.getValue().name());
         pusherStatusLabel.setText(pusherStatus.getValue().name());
         proximitySensorStatusLabel.setText(proximitySensorStatus.getValue().name());
+        proximitySensorDistanceCmLabel.setText(String.format("%.2f", proximitySensorDistanceCm.getValue()) + " cm");
 
         // change blade status label when the blade status changes
         bladeStatusObserver = new ConcurrentObserver<BladeStatus>() {
@@ -91,6 +98,19 @@ public class StatusView extends JPanel {
         };
         proximitySensorStatus.addObserver(proximitySensorStatusObserver);
 
+        // change proximity sensor distance label when the proximity sensor distance changes
+        proximitySensorDistanceCmObserver = new ConcurrentObserver<Double>() {
+            @Override
+            public void onChange(Double newDistanceCm) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        proximitySensorDistanceCmLabel.setText(String.format("%.2f", newDistanceCm) + " cm");
+                    }
+                });
+            }
+        };
+        proximitySensorDistanceCm.addObserver(proximitySensorDistanceCmObserver);
+
         // set the border of this jpanel
         TitledBorder border = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.black),
@@ -127,7 +147,7 @@ public class StatusView extends JPanel {
         constr.gridy = 1;
         this.add(pusherStatusLabel, constr);
 
-        JLabel proximitySensorStatusText = new JLabel("Prox");
+        JLabel proximitySensorStatusText = new JLabel("Prox_S");
         constr.fill = GridBagConstraints.HORIZONTAL;
         constr.gridx = 0;
         constr.gridy = 2;
@@ -137,5 +157,16 @@ public class StatusView extends JPanel {
         constr.gridx = 1;
         constr.gridy = 2;
         this.add(proximitySensorStatusLabel, constr);
+
+        JLabel proximitySensorDistanceCmText = new JLabel("Prox_D");
+        constr.fill = GridBagConstraints.HORIZONTAL;
+        constr.gridx = 0;
+        constr.gridy = 3;
+        this.add(proximitySensorDistanceCmText, constr);
+
+        constr.fill = GridBagConstraints.HORIZONTAL;
+        constr.gridx = 1;
+        constr.gridy = 3;
+        this.add(proximitySensorDistanceCmLabel, constr);
     }
 }
