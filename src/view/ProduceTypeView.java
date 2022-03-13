@@ -4,6 +4,8 @@ import model.ProduceType;
 
 import util.ConcurrentObservable;
 
+import serial.ArduinoCmder;
+
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
@@ -66,6 +68,12 @@ public class ProduceTypeView extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 produceType.setValue(ProduceType.LETTUCE);
                 produceTypeLabel.setText(ProduceType.LETTUCE.name());
+
+                // issue command CMD_00 to arduino with data [1, 0, 0, ...]
+                byte cmdId = ArduinoCmder.CMD_00;
+                byte[] cmdData = new byte[ArduinoCmder.CMD_DATA_LEN];
+                cmdData[0] = 1;
+                ArduinoCmder.getInstance().sendCmd(cmdId, cmdData);
             }
         });
 
@@ -75,6 +83,12 @@ public class ProduceTypeView extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 produceType.setValue(ProduceType.MICROGREEN);
                 produceTypeLabel.setText(ProduceType.MICROGREEN.name());
+
+                // issue command CMD_00 to arduino with data [0, 0, 0, ...]
+                byte cmdId = ArduinoCmder.CMD_00;
+                byte[] cmdData = new byte[ArduinoCmder.CMD_DATA_LEN];
+                cmdData[0] = 0;
+                ArduinoCmder.getInstance().sendCmd(cmdId, cmdData);
             }
         });
 
