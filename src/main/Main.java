@@ -6,10 +6,16 @@ import model.ProximitySensorModel;
 import model.LettuceCutterModel;
 import model.Status;
 import model.ProduceType;
+import model.OpenLoopStepperMotorModel;
 
 import view.StatusView;
 import view.StatisticsView;
 import view.ProduceTypeView;
+import view.MotorView;
+
+import controller.OpenLoopStepperMotorController;
+
+import serial.ArduinoCmder;
 
 import util.ConcurrentObservable;
 import util.ConcurrentObserver;
@@ -62,6 +68,25 @@ public class Main {
         ConcurrentObservable<ProduceType> produceType = new ConcurrentObservable<ProduceType>(ProduceType.LETTUCE);
         ProduceTypeView produceTypeView = new ProduceTypeView(produceType);
         frame.getContentPane().add(produceTypeView);
+
+        // add the motor view
+        OpenLoopStepperMotorModel motorModel1 = new OpenLoopStepperMotorModel(
+            ArduinoCmder.CMD_MOTOR_1_PWR
+        );
+        OpenLoopStepperMotorController motorController1 =
+            new OpenLoopStepperMotorController(motorModel1);
+        OpenLoopStepperMotorModel motorModel2 = new OpenLoopStepperMotorModel(
+            ArduinoCmder.CMD_MOTOR_2_PWR
+        );
+        OpenLoopStepperMotorController motorController2 =
+            new OpenLoopStepperMotorController(motorModel2);
+        MotorView motorView = new MotorView(
+            motorModel1,
+            motorModel2,
+            motorController1,
+            motorController2
+        );
+        frame.getContentPane().add(motorView);
 
         // display the window
         frame.pack();

@@ -34,9 +34,11 @@ public class ArduinoCmder {
     private static final int BAUD_RATE = 9600;
 
     // commands
-    public static final byte CMD_00 = 0x00;
-    public static final byte CMD_01 = 0x01;
-    public static final byte CMD_02 = 0x02;
+    public static final byte CMD_00             = 0x00;
+    public static final byte CMD_01             = 0x01;
+    public static final byte CMD_02             = 0x02;
+    public static final byte CMD_MOTOR_1_PWR    = 0x03;
+    public static final byte CMD_MOTOR_2_PWR    = 0x04;
 
     public static final int CMD_DATA_LEN = 32;
     public static final int CMD_BUF_LEN = CMD_DATA_LEN + 1;

@@ -1,4 +1,5 @@
 ./src/view/StatusView.java
+./src/view/MotorView.java
 ./src/view/ProduceTypeView.java
 ./src/view/StatisticsView.java
 ./src/model/PusherModel.java
@@ -7,6 +8,7 @@
 ./src/model/BladeModel.java
 ./src/model/ProximitySensorStatus.java
 ./src/model/ProximitySensorModel.java
+./src/model/OpenLoopStepperMotorModel.java
 ./src/model/Status.java
 ./src/model/ProduceType.java
 ./src/model/BladeStatus.java
@@ -18,4 +20,5 @@
 ./src/main/BladeSystem.java
 ./src/main/ProximitySensorSystem.java
 ./src/controller/LettuceCutterController.java
+./src/controller/OpenLoopStepperMotorController.java
 ./src/serial/ArduinoCmder.java
