@@ -8,6 +8,7 @@ import model.Status;
 import model.ProduceType;
 import model.OpenLoopStepperMotorModel;
 
+import view.PowerView;
 import view.StatusView;
 import view.StatisticsView;
 import view.ProduceTypeView;
@@ -22,9 +23,13 @@ import util.ConcurrentObserver;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
-import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Dimension;
 
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
@@ -32,6 +37,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 public class Main {
     private static void createAndShowGUI(
+        PowerSystem powerSystem,
         BladeSystem bladeSystem,
         PusherSystem pusherSystem,
         ProximitySensorSystem proximitySensorSystem
@@ -41,10 +47,21 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // set layout
-        frame.getContentPane().setLayout(new FlowLayout());
+        frame.getContentPane().setLayout(new GridBagLayout());
+        GridBagConstraints constr = new GridBagConstraints();
 
         // create the lettuce cutter model
         // LettuceCutterModel lettuceCutterModel = new LettuceCutterModel();
+
+        // add the power view
+        PowerView powerView = new PowerView(
+            powerSystem.getPowerStatus()
+        );
+        constr.fill = GridBagConstraints.BOTH;
+        constr.gridx = 0;
+        constr.gridy = 0;
+        constr.insets = new Insets(5, 5, 5, 5);
+        frame.getContentPane().add(powerView, constr);
 
         // add the status view
         StatusView statusView = new StatusView(
@@ -53,7 +70,11 @@ public class Main {
             proximitySensorSystem.getProximitySensorModel_1().getProximitySensorStatus(),
             proximitySensorSystem.getProximitySensorModel_1().getDistanceCm()
         );
-        frame.getContentPane().add(statusView);
+        constr.fill = GridBagConstraints.BOTH;
+        constr.gridx = 0;
+        constr.gridy = 1;
+        constr.insets = new Insets(5, 5, 5, 5);
+        frame.getContentPane().add(statusView, constr);
 
         // add the statistics view
         ConcurrentObservable<Integer> lettuceRaftCount = new ConcurrentObservable<Integer>(0);
@@ -62,12 +83,20 @@ public class Main {
             lettuceRaftCount,
             microgreenRaftCount
         );
-        frame.getContentPane().add(statisticsView);
+        constr.fill = GridBagConstraints.BOTH;
+        constr.gridx = 0;
+        constr.gridy = 2;
+        constr.insets = new Insets(5, 5, 5, 5);
+        frame.getContentPane().add(statisticsView, constr);
 
         // add the produce type view
         ConcurrentObservable<ProduceType> produceType = new ConcurrentObservable<ProduceType>(ProduceType.LETTUCE);
         ProduceTypeView produceTypeView = new ProduceTypeView(produceType);
-        frame.getContentPane().add(produceTypeView);
+        constr.fill = GridBagConstraints.BOTH;
+        constr.gridx = 1;
+        constr.gridy = 0;
+        constr.insets = new Insets(5, 5, 5, 5);
+        frame.getContentPane().add(produceTypeView, constr);
 
         // add the motor view
         OpenLoopStepperMotorModel motorModel1 = new OpenLoopStepperMotorModel(
@@ -86,7 +115,11 @@ public class Main {
             motorController1,
             motorController2
         );
-        frame.getContentPane().add(motorView);
+        constr.fill = GridBagConstraints.BOTH;
+        constr.gridx = 1;
+        constr.gridy = 1;
+        constr.insets = new Insets(5, 5, 5, 5);
+        frame.getContentPane().add(motorView, constr);
 
         // display the window
         frame.pack();
@@ -96,6 +129,9 @@ public class Main {
     public static void main(String[] args) {
         // create gpio controller
         GpioController gpio = GpioFactory.getInstance();
+
+        // create power system
+        PowerSystem powerSystem = new PowerSystem();
 
         // create blade system
         BladeModel bladeModel = new BladeModel();
@@ -120,6 +156,10 @@ public class Main {
             proximitySensorModel_1
         );
 
+        // start power system
+        Thread powerSystemThread = new Thread(powerSystem);
+        powerSystemThread.start();
+
         // start blade system
         Thread bladeSystemThread = new Thread(bladeSystem);
         bladeSystemThread.start();
@@ -137,6 +177,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI(
+                    powerSystem,
                     bladeSystem,
                     pusherSystem,
                     proximitySensorSystem
